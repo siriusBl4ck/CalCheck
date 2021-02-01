@@ -1,4 +1,0 @@
-#Mon Feb 01 16:50:10 IST 2021
-base.0=/home/saurav/siriusBl4ck/AndroidStudioProjects/vision-quickstart/app/build/intermediates/dex/proguard/minifyProguardWithR8/classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
