@@ -19,9 +19,23 @@ package com.google.mlkit.vision.demo.java.labeldetector;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.AsyncTask;
+import android.util.Log;
+
 import com.google.common.primitives.Floats;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.label.ImageLabel;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,6 +50,9 @@ public class LabelGraphic extends GraphicOverlay.Graphic {
   private final GraphicOverlay overlay;
 
   private final List<ImageLabel> labels;
+
+  int textBuffer = 1000;
+  String txtJson;
 
   public LabelGraphic(GraphicOverlay overlay, List<ImageLabel> labels) {
     super(overlay);
@@ -65,26 +82,117 @@ public class LabelGraphic extends GraphicOverlay.Graphic {
       maxWidth = Floats.max(maxWidth, line1Width, line2Width);
     }
     float x = Math.max(0, overlay.getWidth() / 2.0f - maxWidth / 2.0f);
-    float y = Math.max(200, overlay.getHeight() / 2.0f - totalHeight / 2.0f);
+    float y = Math.max(200, overlay.getHeight() / 2.0f - totalHeight / 2.0f) + textBuffer;
 
-    if (!labels.isEmpty()) {
-      float padding = 20;
-      canvas.drawRect(
-          x - padding, y - padding, x + maxWidth + padding, y + totalHeight + padding, labelPaint);
-    }
-
+    int times = 0;
     for (ImageLabel label : labels) {
+      times++;
+      if (times > 1){
+        break;
+      }
       if (y + TEXT_SIZE * 2 > overlay.getHeight()) {
         break;
       }
-      canvas.drawText(label.getText(), x, y + TEXT_SIZE, textPaint);
+
+      String info = getJSONInfo(label.getText()).concat(" kcal");
+      canvas.drawText(
+              label.getText(),
+              x,
+              y + TEXT_SIZE,
+              textPaint);
       y += TEXT_SIZE;
       canvas.drawText(
-          String.format(Locale.US, LABEL_FORMAT, label.getConfidence() * 100, label.getIndex()),
+          info,
           x,
           y + TEXT_SIZE,
           textPaint);
       y += TEXT_SIZE;
+    }
+  }
+
+  public String getJSONInfo(String keywords){
+    String url = "https://api.calorieninjas.com/v1/nutrition?query=".concat(keywords);
+    try {
+      new JsonTask().execute(url).get();
+      return parseJSON(txtJson);
+    }
+    catch (Exception e){
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public String parseJSON(String jsonText){
+    try {
+      JSONObject jsonObj = new JSONObject(jsonText);
+      JSONArray nutritionInfo = jsonObj.getJSONArray("items");
+      return Double.toString(nutritionInfo.getJSONObject(0).getDouble("calories"));
+    }
+    catch (Exception e){
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  private class JsonTask extends AsyncTask<String, String, String> {
+
+    protected void onPreExecute() {
+      super.onPreExecute();
+    }
+
+    protected String doInBackground(String... params) {
+
+
+      HttpURLConnection connection = null;
+      BufferedReader reader = null;
+
+      try {
+        URL url = new URL(params[0]);
+        connection = (HttpURLConnection) url.openConnection();
+
+        connection.setRequestProperty("X-Api-Key", "WnL/g7XJpD61KNH/GOERsw==Qw3KEMwwleWbsAnG");
+
+        connection.connect();
+
+        InputStream stream = connection.getInputStream();
+
+        reader = new BufferedReader(new InputStreamReader(stream));
+
+        StringBuffer buffer = new StringBuffer();
+        String line = "";
+
+        while ((line = reader.readLine()) != null) {
+          buffer.append(line+"\n");
+          Log.d("Response: ", "> " + line);   //here u ll get whole response...... :-)
+
+        }
+        txtJson = buffer.toString();
+        return buffer.toString();
+
+
+      } catch (MalformedURLException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      } finally {
+        if (connection != null) {
+          connection.disconnect();
+        }
+        try {
+          if (reader != null) {
+            reader.close();
+          }
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+      return null;
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+      super.onPostExecute(result);
+      txtJson = result;
     }
   }
 }
