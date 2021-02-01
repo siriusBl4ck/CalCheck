@@ -150,7 +150,7 @@ public class LabelGraphic extends GraphicOverlay.Graphic {
         URL url = new URL(params[0]);
         connection = (HttpURLConnection) url.openConnection();
 
-        connection.setRequestProperty("X-Api-Key", "WnL/g7XJpD61KNH/GOERsw==Qw3KEMwwleWbsAnG");
+        connection.setRequestProperty("X-Api-Key", "OUR_API_KEY");
 
         connection.connect();
 
