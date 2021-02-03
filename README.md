@@ -4,8 +4,9 @@ ieee hack(); entry for FL_Bois_The_Second
 
 # Second Place winner!
 
-ieee hack(); 2021 was conducted between 29th and 31st January 2021.
+ieee hack(); Hackathon 2021 was conducted between 29th and 31st January 2021.
 Teams had to choose a problem based on the UN Sustainable Development Goals.
+https://hack.ieeemace.org/
 
 We chose the topic "Good health and well being" and created CalCheck, the computer vision based calorie prediction app.
 
