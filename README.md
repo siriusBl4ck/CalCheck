@@ -15,3 +15,5 @@ Frameworks and API's used:
 1. Google MLKit
 2. Aiy's Food Classifier TensorflowLite model: https://tfhub.dev/google/aiy/vision/classifier/food_V1/1
 3. CalorieNinja's free nutrition API: https://calorieninjas.com/
+
+![alt text](https://github.com/siriusBl4ck/CalCheck/blob/master/hackWinners.jpeg)
