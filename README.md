@@ -1,6 +1,6 @@
 # Calcheck
 
-ieee hack(); entry for FL_Bois_The_Second
+ieee hack(); entry for FL_Bois_The_Second. Won Rs. 20000 cash prize and goodies :)
 
 # Second Place winner!
 
